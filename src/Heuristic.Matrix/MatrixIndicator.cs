@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 
 namespace Heuristic.Matrix
@@ -42,13 +41,11 @@ namespace Heuristic.Matrix
             var j = 0;
 
             var iRanges = new List<Range>(8);
-            var jRange = default(Range);
+            var jRange = Range.Empty;
 
             // Example: o=2,[2-4,6];[2,4,5],1;1,5
             for (var index = 0; index < value.Length; index++)
             {
-                Debug.WriteLine("{0}: {1}", index, value[index]);
-
                 if (char.IsDigit(value[index]))
                 {
                     if (parseFrom == -1)
@@ -135,14 +132,21 @@ namespace Heuristic.Matrix
 
                             i = 0;
                             parseFrom = -1;
+                            iRanges.Clear();
+                            jRange = Range.Empty;
                         }
-                        iRanges.Clear();
                         cordinate = Cordinate.I;
                         range = false;
                         break;
                 }
             }
-            foreach (var t in EnumerateFromRanges(iRanges, jRange, converter)) yield return t;
+            if (parseFrom > -1) // not in two brackets. 
+            {
+                parsed = int.Parse(value.AsSpan(parseFrom, value.Length - parseFrom));
+                jRange = range ? new Range(j, parsed) : new Range(parsed);
+
+                foreach (var t in EnumerateFromRanges(iRanges, jRange, converter)) yield return t;
+            }
         }
 
         public override string ToString()
@@ -158,33 +162,7 @@ namespace Heuristic.Matrix
         {
             return new MatrixIndicator(value);
         }
-
-        public static MatrixIndicator Create<T>(T[][] source, Func<int, int, T, bool> filter)
-        {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-            if (filter == null) throw new ArgumentNullException(nameof(filter)); 
-
-            var value = new StringBuilder();
-            var iList = new HashSet<int>(128);
-            var jList = new HashSet<int>(128);
-
-            for (var j = 0; j < source.Length; j++)
-            {
-                if (source[j] == null || source[j].Length == 0) continue;
-
-                for (var i = 0; i < source[j].Length; i++)
-                {
-                    if (filter(i, j, source[i][j]))
-                    {
-
-                    }
-                }
-            }
-
-
-            return Parse(value.ToString());
-        }
-
+       
         public static MatrixIndicator Create<T>(IReadOnlyList<T> source, Func<T, int> iSelector, Func<T, int> jSelector)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
@@ -193,9 +171,9 @@ namespace Heuristic.Matrix
             if (source.Count == 0) return Empty;
 
             var result = new StringBuilder();
-            var keyedByI = new Dictionary<int, List<int>>(source.Count); 
+            var keyedByI = new Dictionary<int, List<int>>(source.Count);
             var keyedByJ = new Dictionary<int, List<int>>(source.Count);
-            
+
             for (var index = 0; index < source.Count; index++)
             {
                 var t = source[index];
@@ -212,28 +190,51 @@ namespace Heuristic.Matrix
                 }
                 if (keyedByJ.TryGetValue(j, out var col))
                 {
-                    row.Add(i);
+                    col.Add(i);
                 }
                 else
                 {
                     keyedByJ.Add(j, new List<int>(source.Count) { i });
                 }
             }
-            foreach (var kvp in keyedByI)
+            for (var index = 0; index < source.Count; index++)
             {
-                var i = kvp.Key;
-                var jList = kvp.Value;
+                var length = result.Length;
+                var t = source[index];
+                var i = iSelector(t);
+                var j = jSelector(t);
 
-                if (jList.Count >= keyedByJ[i].Count)
-                { 
+                if (i == 5 || j == 5)
+                    Console.WriteLine();
+
+                if (keyedByI.ContainsKey(i) && !keyedByJ.ContainsKey(j))
+                {
+                    continue;
+                }
+                else if (!keyedByI.ContainsKey(i) && keyedByJ.ContainsKey(j))
+                {
+                    continue;
+                }
+                else if (keyedByI[i].Count >= keyedByJ[j].Count)
+                {
+                    result.Append(i).Append(',');
+                    result.Append($"[{string.Join(",", keyedByI[i])}]");
+                    // MergeInto(result, keyedByI[i]);
+
+                    keyedByI.Remove(i);
+                    keyedByJ[j].Remove(i);
                 }
                 else
                 {
+                    // MergeInto(result, keyedByJ[j]);
+                    result.Append($"[{string.Join(",", keyedByJ[j])}]");
+                    result.Append(',').Append(j);
 
+                    keyedByJ.Remove(j);
+                    keyedByI[i].Remove(j);
                 }
-                result.Append(';');
+                if (length != result.Length) result.Append(';');
             }
-
             return Parse(result.ToString());
         }
 
@@ -249,12 +250,15 @@ namespace Heuristic.Matrix
                         yield return converter(i, j);
         }
 
-        private static void MergeInto(IReadOnlyList<int> indices, StringBuilder result)
+        private static StringBuilder MergeInto(StringBuilder result, IReadOnlyList<int> indices)
         {
-            if (indices.Count == 0) return;
+            if (indices.Count == 0) return result;
+            if (indices.Count == 1) return result.Append(indices[0]);  
 
             var temp = indices[0];
             var diff = 1;
+
+            result.Append('[');
 
             for (var index = 1; index < indices.Count; index++)
             {
@@ -277,7 +281,9 @@ namespace Heuristic.Matrix
                         break;
                 }
             }
-            result.Append($"{temp}");
+            result.Append($"{temp}]");
+
+            return result.AppendFormat("[{0}]", string.Join(",", indices));
         }
 
         #endregion
@@ -292,9 +298,11 @@ namespace Heuristic.Matrix
 
     internal struct Range : IEnumerable<int>
     {
+        public readonly static Range Empty = new Range();
+
         // all inclusive
-        private readonly int min;
-        private readonly int max;
+        private readonly int? min;
+        private readonly int? max;
 
         public Range(int value)
         {
@@ -310,8 +318,9 @@ namespace Heuristic.Matrix
 
         public IEnumerator<int> GetEnumerator()
         {
-            for (var v = min; v <= max; v++)
-                yield return v;
+            if (min != null && max != null)
+                for (var v = min.GetValueOrDefault(); v <= max.GetValueOrDefault(); v++)
+                    yield return v;
         }
 
         IEnumerator IEnumerable.GetEnumerator()

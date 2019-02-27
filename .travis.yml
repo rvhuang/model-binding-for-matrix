@@ -1,0 +1,13 @@
+language: csharp
+solution: Heuristic.Matrix.sln
+dist: xenial
+mono: none
+sudo: required
+dotnet: 2.2
+
+install:
+- dotnet restore src/Heuristic.Matrix.sln
+
+script:
+- dotnet build src/Heuristic.Matrix.sln
+- dotnet test src/Heuristic.Matrix.Test/Heuristic.Matrix.Test.csproj -c Release

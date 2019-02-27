@@ -1,5 +1,7 @@
 # Model Binding For Matrix
 
+[![Build Status](https://travis-ci.org/rvhuang/model-binding-for-matrix.svg?branch=master)](https://travis-ci.org/rvhuang/model-binding-for-matrix)
+
 A concise way of model binding for martix (2-rank array) in ASP.NET Core.
 
 ## Example

@@ -10,4 +10,4 @@ install:
 
 script:
 - dotnet build src/Heuristic.Matrix.sln
-- dotnet test src/Heuristic.Matrix.Test/Heuristic.Linq.Matrix.csproj -c Release
+- dotnet test src/Heuristic.Matrix.Test/Heuristic.Matrix.Test.csproj -c Release

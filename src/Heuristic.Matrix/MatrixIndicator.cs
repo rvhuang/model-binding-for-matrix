@@ -182,6 +182,7 @@ namespace Heuristic.Matrix
                 if (keyedByI.TryGetValue(i, out var row))
                 {
                     row.Add(j);
+                    row.Sort();
                 }
                 else
                 {
@@ -190,6 +191,7 @@ namespace Heuristic.Matrix
                 if (keyedByJ.TryGetValue(j, out var col))
                 {
                     col.Add(i);
+                    col.Sort();
                 }
                 else
                 {
@@ -217,16 +219,16 @@ namespace Heuristic.Matrix
                 else if (keyedByI[i].Count >= keyedByJ[j].Count)
                 {
                     result.Append(i).Append(',');
-                    result.Append($"[{string.Join(",", keyedByI[i])}]");
-                    // MergeInto(result, keyedByI[i]);
+                    // result.Append($"[{string.Join(",", keyedByI[i])}]");
+                    MergeInto(result, keyedByI[i]);
 
                     keyedByI.Remove(i);
                     keyedByJ[j].Remove(i);
                 }
                 else
                 {
-                    // MergeInto(result, keyedByJ[j]);
-                    result.Append($"[{string.Join(",", keyedByJ[j])}]");
+                    MergeInto(result, keyedByJ[j]);
+                    // result.Append($"[{string.Join(",", keyedByJ[j])}]");
                     result.Append(',').Append(j);
 
                     keyedByJ.Remove(j);
@@ -255,7 +257,7 @@ namespace Heuristic.Matrix
             if (indices.Count == 1) return result.Append(indices[0]);  
 
             var temp = indices[0];
-            var diff = 1;
+            var diff = 0;
 
             result.Append('[');
 
@@ -264,25 +266,35 @@ namespace Heuristic.Matrix
                 switch (indices[index] - temp)
                 {
                     case 1:
-                        if (diff != 1)
-                        {
-                            result.Append($"{temp}-{indices[index - 1]},");
-                            temp = indices[index];
-                        }
+                        diff = 1;
                         continue;
 
                     case 0:
                         break;
 
                     default:
-                        result.Append($"{temp},");
+                        if (diff == 1) 
+                        {
+                            result.Append($"{temp}-{indices[index - 1]},");
+                        }
+                        else
+                        {
+                            result.Append($"{temp},");
+                        }
                         temp = indices[index];
+                        diff = 0;
                         break;
                 }
             }
-            result.Append($"{temp}]");
-
-            return result.AppendFormat("[{0}]", string.Join(",", indices));
+            if (diff == 1) 
+            {
+                result.Append($"{temp}-{indices[indices.Count - 2]}");
+            }
+            else
+            {
+                result.Append($"{temp}]");
+            }
+            return result;
         }
 
         #endregion

@@ -49,12 +49,12 @@ namespace Heuristic.Matrix.Test
                                   where array[j][i] == 1
                                   select (I: i, J: j);
             var expected = MatrixIndicator.Create(selectFromArray.ToArray(), t => t.I, t => t.J);
-            var actual = MatrixIndicator.Parse(expected.ToString()).AsEnumerable(ValueTuple.Create).ToHashSet();
+            var actual = MatrixIndicator.Parse(expected.ToString());
 
             Console.WriteLine(expected);
             Console.WriteLine(actual);
 
-            Assert.Equal(expected.AsEnumerable(ValueTuple.Create).ToHashSet(), actual);
+            Assert.Equal(expected.AsEnumerable(ValueTuple.Create).ToHashSet(), actual.AsEnumerable(ValueTuple.Create).ToHashSet());
         }
     }
 }

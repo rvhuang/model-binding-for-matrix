@@ -6,8 +6,9 @@ namespace Heuristic.Matrix.Test
 {
     public class ConversionTest
     {
-        [Theory]
-        [InlineData("2,[3-4,6];[2,4-6],1;1,5")] // All should produce same result.
+        [Theory] // All should produce same result.
+        [InlineData("2,[3-4,6];[2,4-6],1;1,5")]
+        [InlineData("2,[1,3-4,6];[4-6],1;1,5")]
         [InlineData("2,[3,4,6];[2,4,5,6],1;1,5")]
         public void ConvertFromStringTest(string input)
         {

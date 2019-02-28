@@ -257,42 +257,42 @@ namespace Heuristic.Matrix
             if (indices.Count == 1) return result.Append(indices[0]);  
 
             var temp = indices[0];
-            var diff = 0;
+            var series = indices[1] - indices[0] == 1;
 
             result.Append('[');
 
             for (var index = 1; index < indices.Count; index++)
             {
-                switch (indices[index] - temp)
+                switch (indices[index] - indices[index - 1])
                 {
                     case 1:
-                        diff = 1;
-                        continue;
+                        series = true;
+                        break;
 
                     case 0:
                         break;
 
                     default:
-                        if (diff == 1) 
+                        if (series) 
                         {
-                            result.Append($"{temp}-{indices[index - 1]},");
+                            result.Append($"{temp}-{indices[index - 1]},"); 
                         }
                         else
                         {
-                            result.Append($"{temp},");
+                            result.Append($"{indices[index - 1]},"); 
                         }
                         temp = indices[index];
-                        diff = 0;
+                        series = false;
                         break;
                 }
             }
-            if (diff == 1) 
+            if (series) 
             {
-                result.Append($"{temp}-{indices[indices.Count - 2]}");
+                result.Append($"{temp}-{indices[indices.Count - 1]}]");
             }
             else
             {
-                result.Append($"{temp}]");
+                result.Append($"{indices[indices.Count - 1]}]");
             }
             return result;
         }

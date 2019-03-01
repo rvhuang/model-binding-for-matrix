@@ -2,6 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <PackageProjectUrl>https://github.com/rvhuang/model-binding-for-matrix</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/rvhuang/model-binding-for-matrix.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Authors>Robert Vandenberg Huang</Authors>
+    <Product>Model Binding For Matrix</Product>
+    <PackageLicenseUrl>https://github.com/rvhuang/model-binding-for-matrix/blob/master/LICENSE</PackageLicenseUrl>
+    <Version>1.0.0-alpha</Version>
+    <PackageId>Heuristic.Matrix.AspNetCore</PackageId>
+    <PackageTags>dotnetcore;aspnetcore</PackageTags>
+    <Copyright>© 2019 Robert Vandenberg Huang</Copyright>
+    <Description>A concise way of model binding for 2-rank array in ASP.NET Core.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <SignAssembly>false</SignAssembly>
+    <PackageReleaseNotes>Initial pre-release.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

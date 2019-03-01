@@ -18,4 +18,11 @@
     <PackageReleaseNotes>Initial pre-release.</PackageReleaseNotes>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.2\Heuristic.Matrix.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netcoreapp2.2\Heuristic.Matrix.xml</DocumentationFile>
+  </PropertyGroup>
 </Project>

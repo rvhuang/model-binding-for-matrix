@@ -306,37 +306,4 @@ namespace Heuristic.Matrix
         I,
         J
     }
-
-    internal struct Range : IEnumerable<int>
-    {
-        public readonly static Range Empty = new Range();
-
-        // all inclusive
-        private readonly int? min;
-        private readonly int? max;
-
-        public Range(int value)
-        {
-            min = value;
-            max = value;
-        }
-
-        public Range(int min, int max)
-        {
-            this.min = Math.Min(min, max);
-            this.max = Math.Max(min, max);
-        }
-
-        public IEnumerator<int> GetEnumerator()
-        {
-            if (min != null && max != null)
-                for (var v = min.GetValueOrDefault(); v <= max.GetValueOrDefault(); v++)
-                    yield return v;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-    }
 }

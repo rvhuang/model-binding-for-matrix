@@ -161,7 +161,7 @@ namespace Heuristic.Matrix
         {
             return new MatrixIndicator(value);
         }
-       
+
         public static MatrixIndicator Create<T>(IReadOnlyList<T> source, Func<T, int> iSelector, Func<T, int> jSelector)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
@@ -218,18 +218,14 @@ namespace Heuristic.Matrix
                 }
                 else if (keyedByI[i].Count >= keyedByJ[j].Count)
                 {
-                    result.Append(i).Append(',');
-                    // result.Append($"[{string.Join(",", keyedByI[i])}]");
-                    MergeInto(result, keyedByI[i]);
+                    result.Append(i).Append(',').Append(MergeInto(keyedByI[i]));
 
                     keyedByI.Remove(i);
                     keyedByJ[j].Remove(i);
                 }
                 else
                 {
-                    MergeInto(result, keyedByJ[j]);
-                    // result.Append($"[{string.Join(",", keyedByJ[j])}]");
-                    result.Append(',').Append(j);
+                    result.Append(MergeInto(keyedByJ[j])).Append(',').Append(j);
 
                     keyedByJ.Remove(j);
                     keyedByI[i].Remove(j);
@@ -251,15 +247,25 @@ namespace Heuristic.Matrix
                         yield return converter(i, j);
         }
 
-        private static StringBuilder MergeInto(StringBuilder result, IReadOnlyList<int> indices)
+        private static string MergeInto(IReadOnlyList<int> indices)
         {
-            if (indices.Count == 0) return result;
-            if (indices.Count == 1) return result.Append(indices[0]);  
+            if (indices.Count == 0) return string.Empty;
+            if (indices.Count == 1) return Convert.ToString(indices[0]);
+
+            return string.Concat("[", string.Join(",", ToRanges(indices)), "]");
+        }
+
+        private static IEnumerable<Range> ToRanges(IReadOnlyList<int> indices)
+        {
+            if (indices.Count == 0) yield break;
+            if (indices.Count == 1)
+            {
+                yield return new Range(indices[0]);
+                yield break;
+            }
 
             var temp = indices[0];
             var series = indices[1] - indices[0] == 1;
-
-            result.Append('[');
 
             for (var index = 1; index < indices.Count; index++)
             {
@@ -273,32 +279,30 @@ namespace Heuristic.Matrix
                         break;
 
                     default:
-                        if (series) 
+                        if (series)
                         {
-                            result.Append($"{temp}-{indices[index - 1]},"); 
+                            yield return new Range(temp, indices[index - 1]);
                         }
                         else
                         {
-                            result.Append($"{indices[index - 1]},"); 
+                            yield return new Range(indices[index - 1]);
                         }
                         temp = indices[index];
                         series = false;
                         break;
                 }
             }
-            if (series) 
+            if (series)
             {
-                result.Append($"{temp}-{indices[indices.Count - 1]}]");
+                yield return new Range(temp, indices[indices.Count - 1]);
             }
             else
             {
-                result.Append($"{indices[indices.Count - 1]}]");
+                yield return new Range(indices[indices.Count - 1]);
             }
-            return result;
         }
 
         #endregion
-
     }
 
     internal enum Cordinate

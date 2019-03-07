@@ -4,9 +4,15 @@ using System.Threading.Tasks;
 
 namespace Heuristic.Matrix.AspNetCore
 {
+    /// <summary>
+    /// Represents the model binder for <see cref="MatrixIndicator"/>.
+    /// </summary>
     public class MatrixIndicatorModelBinder : IModelBinder
     {
-        public static MatrixIndicatorModelBinder Default => new MatrixIndicatorModelBinder();
+        /// <summary>
+        /// Gets the default instance.
+        /// </summary>
+        public static IModelBinder Default => new MatrixIndicatorModelBinder();
 
         Task IModelBinder.BindModelAsync(ModelBindingContext bindingContext)
         {

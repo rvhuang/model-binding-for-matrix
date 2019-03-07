@@ -12,7 +12,7 @@ namespace Heuristic.Matrix
         #region Fields
 
         /// <summary>
-        /// Represents an empty instance.
+        /// Represents an empty range which <see cref="Min"/> and <see cref="Max"/> are null.
         /// </summary>
         public readonly static Range Empty = new Range();
 
@@ -106,6 +106,11 @@ namespace Heuristic.Matrix
             return !IsEmpty && !other.IsEmpty && min <= other.min && max >= other.max;
         }
 
+        /// <summary>
+        /// Determines if current range intersects with <paramref name="other"/>.
+        /// </summary>
+        /// <param name="other">The instance to test.</param>
+        /// <returns>This method returns <c>true</c> if there is any intersection, otherwise <c>false</c>.</returns>
         public bool IntersectWith(Range other)
         {
             if (IsEmpty || other.IsEmpty)
@@ -120,20 +125,12 @@ namespace Heuristic.Matrix
             return true;
         }
 
-        public Range Intersect(Range other)
-        {
-            if (IntersectWith(other))
-            {
-                if (max.GetValueOrDefault() <= other.max.GetValueOrDefault())
-                    return new Range(other.min.GetValueOrDefault(), max.GetValueOrDefault());
-
-                if (other.max.GetValueOrDefault() <= max.GetValueOrDefault())
-                    return new Range(min.GetValueOrDefault(), other.max.GetValueOrDefault());
-            }
-            return Empty;
-        }
-
-        public Range[] Splits(Range other)
+        /// <summary>
+        /// Splits a range into multiple ranges.
+        /// </summary>
+        /// <param name="other">The range to split.</param>
+        /// <returns>An array that consists of multiple ranges.</returns>
+        public Range[] Split(Range other)
         {
             if (Contains(other))
             {
@@ -236,6 +233,30 @@ namespace Heuristic.Matrix
             if (min != null && max != null)
                 for (var v = min.GetValueOrDefault(); v <= max.GetValueOrDefault(); v++)
                     yield return v;
+        }
+
+        #endregion
+
+        #region Others
+
+        /// <summary>
+        /// Returns a third <see cref="Range"/> structure that represents the intersection of two other <see cref="Range"/> structures. 
+        /// If there is no intersection, <see cref="Empty"/> is returned.
+        /// </summary>
+        /// <param name="a">A range to intersect.</param>
+        /// <param name="b">A range to intersect.</param>
+        /// <returns>An instance that represents the intersection of <paramref name="a"/> and <paramref name="b"/>.</returns>
+        public static Range Intersect(Range a, Range b)
+        {
+            if (a.IntersectWith(b))
+            {
+                if (a.max.GetValueOrDefault() <= b.max.GetValueOrDefault())
+                    return new Range(b.min.GetValueOrDefault(), a.max.GetValueOrDefault());
+
+                if (b.max.GetValueOrDefault() <= a.max.GetValueOrDefault())
+                    return new Range(a.min.GetValueOrDefault(), b.max.GetValueOrDefault());
+            }
+            return Empty;
         }
 
         #endregion

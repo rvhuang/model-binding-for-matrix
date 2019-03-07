@@ -25,6 +25,50 @@ namespace Heuristic.Matrix.Test
         }
 
         [Fact]
+        public void IntersectSuccessTest()
+        {
+            var range1 = new Range(1, 4);
+            var range2 = new Range(3, 6);
+            var expected = new Range(3, 4);
+            var actual = Range.Intersect(range1, range2);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void IntersectEmptyTest()
+        {
+            var range1 = new Range(1, 3);
+            var range2 = new Range(4, 6);
+            var expected = Range.Empty;
+            var actual = Range.Intersect(range1, range2);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void IntersectReverseSuccessTest()
+        {
+            var range1 = new Range(1, 4);
+            var range2 = new Range(3, 6);
+            var expected = new Range(3, 4);
+            var actual = Range.Intersect(range2, range1);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void IntersectReverseEmptyTest()
+        {
+            var range1 = new Range(1, 3);
+            var range2 = new Range(4, 6);
+            var expected = Range.Empty;
+            var actual = Range.Intersect(range2, range1);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void ContainsTrueTest()
         {
             var range1 = new Range(1, 6);
@@ -55,7 +99,7 @@ namespace Heuristic.Matrix.Test
                 new Range(3, 4),
                 new Range(4, 6),
             };
-            var actual = range1.Splits(range2);
+            var actual = range1.Split(range2);
 
             Assert.Equal(expected, actual);
         }
@@ -71,7 +115,7 @@ namespace Heuristic.Matrix.Test
                 new Range(3, 4),
                 new Range(4, 6),
             };
-            var actual = range1.Splits(range2);
+            var actual = range1.Split(range2);
 
             Assert.Equal(expected, actual);
         }
@@ -87,7 +131,7 @@ namespace Heuristic.Matrix.Test
                 new Range(3, 4),
                 new Range(4, 6),
             };
-            var actual = range2.Splits(range1);
+            var actual = range2.Split(range1);
 
             Assert.Equal(expected, actual);
         }
@@ -103,7 +147,7 @@ namespace Heuristic.Matrix.Test
                 new Range(3, 4),
                 new Range(4, 6),
             };
-            var actual = range2.Splits(range1);
+            var actual = range2.Split(range1);
 
             Assert.Equal(expected, actual);
         }
@@ -114,8 +158,8 @@ namespace Heuristic.Matrix.Test
             var range1 = new Range(1, 3);
             var range2 = new Range(4, 6);
 
-            Assert.Empty(range1.Splits(range2));
-            Assert.Empty(range2.Splits(range1));
+            Assert.Empty(range1.Split(range2));
+            Assert.Empty(range2.Split(range1));
         }
     }
 }

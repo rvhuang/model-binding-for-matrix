@@ -3,9 +3,15 @@ using System;
 
 namespace Heuristic.Matrix.AspNetCore
 {
+    /// <summary>
+    ///  Creates <see cref="MatrixIndicatorModelBinder"/> instances.
+    /// </summary>
     public class MatrixIndicatorModelBinderFactory : IModelBinderProvider
     {
-        public static MatrixIndicatorModelBinderFactory Default => new MatrixIndicatorModelBinderFactory();
+        /// <summary>
+        /// Gets the default instance.
+        /// </summary>
+        public static IModelBinderProvider Default => new MatrixIndicatorModelBinderFactory();
 
         IModelBinder IModelBinderProvider.GetBinder(ModelBinderProviderContext context)
         {

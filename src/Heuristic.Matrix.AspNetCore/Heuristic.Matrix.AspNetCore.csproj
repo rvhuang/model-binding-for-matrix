@@ -2,14 +2,36 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
+    <PackageProjectUrl>https://github.com/rvhuang/model-binding-for-matrix</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/rvhuang/model-binding-for-matrix.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Authors>Robert Vandenberg Huang</Authors>
+    <Product>Model Binding For Matrix</Product>
+    <PackageLicenseUrl>https://github.com/rvhuang/model-binding-for-matrix/blob/master/LICENSE</PackageLicenseUrl>
+    <Version>1.0.0-alpha</Version>
+    <PackageId>Heuristic.Matrix.AspNetCore</PackageId>
+    <PackageTags>dotnetcore;aspnetcore</PackageTags>
+    <Copyright>© 2019 Robert Vandenberg Huang</Copyright>
+    <Description>A concise way of model binding for 2-rank array in ASP.NET Core.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <SignAssembly>false</SignAssembly>
+    <PackageReleaseNotes>Initial pre-release.</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.2\Heuristic.Matrix.AspNetCore.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netcoreapp2.2\Heuristic.Matrix.AspNetCore.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Heuristic.Matrix\Heuristic.Matrix.csproj" />
+    <ProjectReference Include="..\Heuristic.Matrix\Heuristic.Matrix.csproj" Condition="'$(Configuration)'=='Debug'" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Heuristic.Matrix" Version="1.0.0-alpha" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.0.0" />
   </ItemGroup>
-
 </Project>

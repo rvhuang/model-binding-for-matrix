@@ -5,13 +5,28 @@ using System.Text;
 
 namespace Heuristic.Matrix
 {
+    /// <summary>
+    /// Represents a collection of indices of a two-rank array.
+    /// </summary>
     public struct MatrixIndicator
     {
         #region Fields
 
+        /// <summary>
+        /// Represents an empty instance.
+        /// </summary>
         public readonly static MatrixIndicator Empty = new MatrixIndicator();
 
         private readonly string value;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets a boolean value that represents if the instance is empty.
+        /// </summary>
+        public bool IsEmpty => string.IsNullOrEmpty(value);
 
         #endregion
 
@@ -19,13 +34,20 @@ namespace Heuristic.Matrix
 
         internal MatrixIndicator(string value)
         {
-            this.value = value ?? throw new ArgumentNullException(nameof(value));
+            this.value = value;
         }
 
         #endregion
 
         #region Methods
 
+        /// <summary>
+        /// Gets an <see cref="IEnumerable{T}"/> object created from current instance.
+        /// </summary>
+        /// <typeparam name="T">The type of the collection.</typeparam>
+        /// <param name="converter">The delegate that maps indice to actaul value. The first parameter is <c>i</c> and second parameter is <c>j</c>.</param>
+        /// <returns>A collection created from current instance.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="converter"/> is null.</exception>
         public IEnumerable<T> AsEnumerable<T>(Func<int, int, T> converter)
         {
             if (converter == null) throw new ArgumentNullException(nameof(converter));
@@ -148,6 +170,10 @@ namespace Heuristic.Matrix
             }
         }
 
+        /// <summary>
+        /// Gets the original string that represents current instance.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return value;
@@ -157,11 +183,25 @@ namespace Heuristic.Matrix
 
         #region Public Helpers
 
+        /// <summary>
+        /// Parses a string and create a <see cref="MatrixIndicator"/> object.
+        /// </summary>
+        /// <param name="value">The string to be parsed.</param>
+        /// <returns>A <see cref="MatrixIndicator"/> object created from <paramref name="value"/>.</returns>
         public static MatrixIndicator Parse(string value)
         {
             return new MatrixIndicator(value);
         }
-       
+
+        /// <summary>
+        /// Creates a <see cref="MatrixIndicator"/> object from a collection.
+        /// </summary>
+        /// <typeparam name="T">The type of the collection.</typeparam>
+        /// <param name="source">The source collection.</param>
+        /// <param name="iSelector">The selector that returns index <c>i</c> from the source object.</param>
+        /// <param name="jSelector">The selector that returns index <c>j</c> from the source object.</param>
+        /// <returns>A <see cref="MatrixIndicator"/> object created from the collection.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/>, <paramref name="iSelector"/> or <paramref name="jSelector"/> is null.</exception>
         public static MatrixIndicator Create<T>(IReadOnlyList<T> source, Func<T, int> iSelector, Func<T, int> jSelector)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
@@ -182,6 +222,7 @@ namespace Heuristic.Matrix
                 if (keyedByI.TryGetValue(i, out var row))
                 {
                     row.Add(j);
+                    row.Sort();
                 }
                 else
                 {
@@ -190,6 +231,7 @@ namespace Heuristic.Matrix
                 if (keyedByJ.TryGetValue(j, out var col))
                 {
                     col.Add(i);
+                    col.Sort();
                 }
                 else
                 {
@@ -216,18 +258,14 @@ namespace Heuristic.Matrix
                 }
                 else if (keyedByI[i].Count >= keyedByJ[j].Count)
                 {
-                    result.Append(i).Append(',');
-                    result.Append($"[{string.Join(",", keyedByI[i])}]");
-                    // MergeInto(result, keyedByI[i]);
+                    result.Append(i).Append(',').Append(MergeInto(keyedByI[i]));
 
                     keyedByI.Remove(i);
                     keyedByJ[j].Remove(i);
                 }
                 else
                 {
-                    // MergeInto(result, keyedByJ[j]);
-                    result.Append($"[{string.Join(",", keyedByJ[j])}]");
-                    result.Append(',').Append(j);
+                    result.Append(MergeInto(keyedByJ[j])).Append(',').Append(j);
 
                     keyedByJ.Remove(j);
                     keyedByI[i].Remove(j);
@@ -249,82 +287,67 @@ namespace Heuristic.Matrix
                         yield return converter(i, j);
         }
 
-        private static StringBuilder MergeInto(StringBuilder result, IReadOnlyList<int> indices)
+        private static string MergeInto(IReadOnlyList<int> indices)
         {
-            if (indices.Count == 0) return result;
-            if (indices.Count == 1) return result.Append(indices[0]);  
+            if (indices.Count == 0) return string.Empty;
+            if (indices.Count == 1) return Convert.ToString(indices[0]);
+
+            return string.Concat("[", string.Join(",", ToRanges(indices)), "]");
+        }
+
+        private static IEnumerable<Range> ToRanges(IReadOnlyList<int> indices)
+        {
+            if (indices.Count == 0) yield break;
+            if (indices.Count == 1)
+            {
+                yield return new Range(indices[0]);
+                yield break;
+            }
 
             var temp = indices[0];
-            var diff = 1;
-
-            result.Append('[');
+            var series = indices[1] - indices[0] == 1;
 
             for (var index = 1; index < indices.Count; index++)
             {
-                switch (indices[index] - temp)
+                switch (indices[index] - indices[index - 1])
                 {
                     case 1:
-                        if (diff != 1)
-                        {
-                            result.Append($"{temp}-{indices[index - 1]},");
-                            temp = indices[index];
-                        }
-                        continue;
+                        series = true;
+                        break;
 
                     case 0:
                         break;
 
                     default:
-                        result.Append($"{temp},");
+                        if (series)
+                        {
+                            yield return new Range(temp, indices[index - 1]);
+                        }
+                        else
+                        {
+                            yield return new Range(indices[index - 1]);
+                        }
                         temp = indices[index];
+                        series = false;
                         break;
                 }
             }
-            result.Append($"{temp}]");
-
-            return result.AppendFormat("[{0}]", string.Join(",", indices));
+            if (series)
+            {
+                yield return new Range(temp, indices[indices.Count - 1]);
+            }
+            else
+            {
+                yield return new Range(indices[indices.Count - 1]);
+            }
         }
 
         #endregion
-
     }
 
     internal enum Cordinate
     {
         I,
         J
-    }
-
-    internal struct Range : IEnumerable<int>
-    {
-        public readonly static Range Empty = new Range();
-
-        // all inclusive
-        private readonly int? min;
-        private readonly int? max;
-
-        public Range(int value)
-        {
-            min = value;
-            max = value;
-        }
-
-        public Range(int min, int max)
-        {
-            this.min = Math.Min(min, max);
-            this.max = Math.Max(min, max);
-        }
-
-        public IEnumerator<int> GetEnumerator()
-        {
-            if (min != null && max != null)
-                for (var v = min.GetValueOrDefault(); v <= max.GetValueOrDefault(); v++)
-                    yield return v;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 }

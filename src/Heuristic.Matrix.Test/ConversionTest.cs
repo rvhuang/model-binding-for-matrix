@@ -6,8 +6,9 @@ namespace Heuristic.Matrix.Test
 {
     public class ConversionTest
     {
-        [Theory]
-        [InlineData("2,[3-4,6];[2,4-6],1;1,5")] // All should produce same result.
+        [Theory] // All should produce same result.
+        [InlineData("2,[3-4,6];[2,4-6],1;1,5")]
+        [InlineData("2,[1,3-4,6];[4-6],1;1,5")]
         [InlineData("2,[3,4,6];[2,4,5,6],1;1,5")]
         public void ConvertFromStringTest(string input)
         {
@@ -49,12 +50,12 @@ namespace Heuristic.Matrix.Test
                                   where array[j][i] == 1
                                   select (I: i, J: j);
             var expected = MatrixIndicator.Create(selectFromArray.ToArray(), t => t.I, t => t.J);
-            var actual = MatrixIndicator.Parse(expected.ToString()).AsEnumerable(ValueTuple.Create).ToHashSet();
+            var actual = MatrixIndicator.Parse(expected.ToString());
 
             Console.WriteLine(expected);
             Console.WriteLine(actual);
 
-            Assert.Equal(expected.AsEnumerable(ValueTuple.Create).ToHashSet(), actual);
+            Assert.Equal(expected.AsEnumerable(ValueTuple.Create).ToHashSet(), actual.AsEnumerable(ValueTuple.Create).ToHashSet());
         }
     }
 }

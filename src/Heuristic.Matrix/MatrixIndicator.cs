@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,7 +6,7 @@ namespace Heuristic.Matrix
 {
     /// <summary>
     /// Represents a collection of indices of a two-rank array.
-    /// </summary>
+    /// </summary> 
     public struct MatrixIndicator
     {
         #region Fields
@@ -36,7 +35,7 @@ namespace Heuristic.Matrix
         {
             this.value = value;
         }
-
+          
         #endregion
 
         #region Methods
@@ -192,7 +191,7 @@ namespace Heuristic.Matrix
         {
             return new MatrixIndicator(value);
         }
-
+        
         /// <summary>
         /// Creates a <see cref="MatrixIndicator"/> object from a collection.
         /// </summary>

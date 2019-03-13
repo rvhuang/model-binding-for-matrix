@@ -7,9 +7,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Heuristic.Matrix\Heuristic.Matrix.csproj" />
+    <ProjectReference Include="..\Heuristic.Matrix.AspNetCore\Heuristic.Matrix.AspNetCore.csproj" />
+    <ProjectReference Include="..\Heuristic.Matrix.Test.AspNetCore\Heuristic.Matrix.Test.AspNetCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="Moq" Version="4.10.1" />
@@ -20,4 +25,11 @@
     <PackageReference Include="xunit" Version="2.4.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Content Update="xunit.runner.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

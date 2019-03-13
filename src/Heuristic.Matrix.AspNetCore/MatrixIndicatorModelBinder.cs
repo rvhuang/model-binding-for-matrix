@@ -27,12 +27,10 @@ namespace Heuristic.Matrix.AspNetCore
 
             bindingContext.ModelState.SetModelValue(modelName, valueProviderResult);
 
-            var value = valueProviderResult.FirstValue;
-
-            // Check if the argument value is null or empty
-            if (string.IsNullOrWhiteSpace(value)) return Task.CompletedTask;
-
-            bindingContext.Model = MatrixIndicator.Parse(value);
+            var model = MatrixIndicator.Parse(valueProviderResult.FirstValue);
+            
+            bindingContext.Model = model;
+            bindingContext.Result = ModelBindingResult.Success(model);
 
             return Task.CompletedTask;
         }

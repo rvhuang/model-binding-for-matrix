@@ -10,4 +10,5 @@ install:
 
 script:
 - dotnet build src/Heuristic.Matrix.sln
+- dotnet build examples/Heuristic.Matrix.Examples.sln
 - dotnet test src/Heuristic.Matrix.Test/Heuristic.Matrix.Test.csproj

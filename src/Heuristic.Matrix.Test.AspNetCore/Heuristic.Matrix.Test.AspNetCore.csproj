@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" /> 
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Heuristic.Matrix.AspNetCore\Heuristic.Matrix.AspNetCore.csproj" />
+    <ProjectReference Include="..\Heuristic.Matrix\Heuristic.Matrix.csproj" />
+  </ItemGroup>
+
+</Project>

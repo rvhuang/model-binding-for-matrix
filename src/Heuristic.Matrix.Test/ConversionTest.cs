@@ -24,7 +24,7 @@ namespace Heuristic.Matrix.Test
             };
             var selectFromArray = from j in Enumerable.Range(0, array.Length)
                                   from i in Enumerable.Range(0, array[j].Length)
-                                  where array[j][i] == 1
+                                  where array[j][i] > 0
                                   select (I: i, J: j);
             var expected = MatrixIndicator.Create(selectFromArray.ToArray(), t => t.I, t => t.J).AsEnumerable(ValueTuple.Create).ToHashSet();
             var actual = MatrixIndicator.Parse(input).AsEnumerable(ValueTuple.Create).ToHashSet();
@@ -47,7 +47,7 @@ namespace Heuristic.Matrix.Test
             };
             var selectFromArray = from j in Enumerable.Range(0, array.Length)
                                   from i in Enumerable.Range(0, array[j].Length)
-                                  where array[j][i] == 1
+                                  where array[j][i] > 0
                                   select (I: i, J: j);
             var expected = MatrixIndicator.Create(selectFromArray.ToArray(), t => t.I, t => t.J);
             var actual = MatrixIndicator.Parse(expected.ToString());

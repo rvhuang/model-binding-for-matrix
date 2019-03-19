@@ -7,7 +7,7 @@ namespace Heuristic.Matrix
     /// <summary>
     /// Represents an inclusive range of integers.
     /// </summary>
-    public struct Range : IReadOnlyList<int>, IEquatable<Range>
+    public struct Range : IReadOnlyList<int>, IEquatable<Range>, IComparable<Range>
     {
         #region Fields
 
@@ -172,6 +172,22 @@ namespace Heuristic.Matrix
             return Array.Empty<Range>();
         }
 
+        /// <summary>
+        /// Create a new instance that continues the current range with the other one.
+        /// </summary>
+        /// <param name="other">The other range to continue.</param>
+        /// <returns>A larger instance that continues the current range.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="other"/>.<see cref="Min"/> value must be equal to <see cref="Max"/> value of current instance, or greater than the value by 1.</exception>
+        /// <remarks>If <paramref name="other"/> is empty, this method will return current instance.</remarks>
+        public Range ContinueWith(Range other)
+        {
+            if (other.IsEmpty) return this;
+            if (max != other.min || other.min.GetValueOrDefault() - max.GetValueOrDefault() > 1)
+                throw new ArgumentOutOfRangeException(nameof(other), "The Min value must be equal to Max value of current instance, or greater than the value by 1.");
+
+            return new Range(min.GetValueOrDefault(), other.max.GetValueOrDefault());
+        }
+
         #endregion
 
         #region Overriding Object Members
@@ -233,6 +249,16 @@ namespace Heuristic.Matrix
             if (min != null && max != null)
                 for (var v = min.GetValueOrDefault(); v <= max.GetValueOrDefault(); v++)
                     yield return v;
+        }
+
+        int IComparable<Range>.CompareTo(Range other)
+        {
+            if (IsEmpty) return other.IsEmpty ? 0 : -1;
+            if (other.IsEmpty) return IsEmpty ? 0 : 1;
+            if (min == other.min)
+                return Comparer<int>.Default.Compare(max.GetValueOrDefault(), other.max.GetValueOrDefault());
+            else
+                return Comparer<int>.Default.Compare(min.GetValueOrDefault(), other.min.GetValueOrDefault());
         }
 
         #endregion

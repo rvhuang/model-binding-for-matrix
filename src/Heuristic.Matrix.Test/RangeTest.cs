@@ -1,4 +1,6 @@
-﻿using Xunit;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Xunit;
 
 namespace Heuristic.Matrix.Test
 {
@@ -160,6 +162,87 @@ namespace Heuristic.Matrix.Test
 
             Assert.Empty(range1.Split(range2));
             Assert.Empty(range2.Split(range1));
+        }
+
+        [Fact]
+        public void RangeComparisonEmptyLessThanTests()
+        {
+            var range1 = Range.Empty;
+            var range2 = new Range(3, 6);
+
+            Assert.True(Comparer<Range>.Default.Compare(range1, range2) < 0);
+        }
+
+        [Fact]
+        public void RangeComparisonEmptyMoreThanTests()
+        {
+            var range1 = new Range(3, 6);
+            var range2 = Range.Empty;
+
+            Assert.True(Comparer<Range>.Default.Compare(range1, range2) > 0);
+        }
+
+        [Theory] // All should produce same result.
+        [InlineData(0, 6)]
+        [InlineData(1, 5)]
+        [InlineData(2, 4)]
+        [InlineData(3, 3)]
+        public void RangeComparisonLessThanTests(int min, int max)
+        {
+            var range1 = new Range(min, max);
+            var range2 = new Range(3, 6);
+            
+            Assert.True(Comparer<Range>.Default.Compare(range1, range2) < 0);
+        }
+        
+        [Theory] // All should produce same result.
+        [InlineData(0, 6)]
+        [InlineData(1, 5)]
+        [InlineData(2, 4)]
+        [InlineData(3, 3)]
+        public void RangeComparisonMoreThanTests(int min, int max)
+        {
+            var range1 = new Range(3, 6);
+            var range2 = new Range(min, max);
+
+            Assert.True(Comparer<Range>.Default.Compare(range1, range2) > 0);
+        }
+        
+        [Theory] // All should produce same result.
+        [InlineData(1, 3)]
+        [InlineData(3, 4)]
+        [InlineData(4, 6)]
+        public void RangeEqualityTests(int min, int max)
+        {
+            var set = new[]
+            {
+                Range.Empty,
+                new Range(1, 3),
+                new Range(3, 4),
+                new Range(4, 6),
+            };
+            var expected = new Range(min, max);
+
+            Assert.Contains(expected, set);
+        }
+
+        [Theory] // All should produce same result.
+        [InlineData(0, 6)]
+        [InlineData(1, 5)]
+        [InlineData(2, 4)]
+        [InlineData(3, 3)]
+        public void RangeInequalityTests(int min, int max)
+        {
+            var set = new[]
+            {
+                Range.Empty,
+                new Range(1, 3),
+                new Range(3, 4),
+                new Range(4, 6),
+            };
+            var expected = new Range(min, max);
+
+            Assert.DoesNotContain(expected, set);
         }
     }
 }
